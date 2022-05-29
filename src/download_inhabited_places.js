@@ -2,17 +2,20 @@ const util = require('util');
 const rp = require('request-promise-native');
 const fs = require('fs');
 const path = require('path');
-const QuadTree = require("simple-quadtree");
+const QuadTree = require('simple-quadtree');
 
-// You need to select an Overpass server to use, make sure you respect
-// its usage policy
+// You need to select an Overpass server to use
+// make sure you respect its usage policy
 //const server = "https://overpass.kumi.systems/api/interpreter";
 const server = "https://lz4.overpass-api.de/api/interpreter";
-const cachedir = "../cache/inhabited_places";
-const outdir = "../cache/generated";
+
+const cachedir = path.resolve(__dirname, 'output', 'cache');
+const outdir = path.resolve(__dirname, 'output', 'data');
 
 // You need to define the countries you will be processing
-var countries = JSON.parse(fs.readFileSync('../data/velivole-config-countries.json'));
+// You can ignore the color used for velivole.fr but you must define the administrative level used for the regional borders
+// This is an EU standard: Local Administrative Units (https://ec.europa.eu/eurostat/web/nuts/local-administrative-units)
+var countries = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'data', 'velivole-config-countries.json', 'utf8')));
 var features = [];
 var regions = {};
 var running = 0;
@@ -20,7 +23,7 @@ var [nInput, nOutput, nValid, nGeom, nName, nOutside] = [0, 0, 0, 0, 0, 0];
 const runningMax = 1;
 
 // You need to define a map extent
-const mapExtent = JSON.parse(fs.readFileSync('../data/velivole-config-extent-map.json', 'utf8'));
+const mapExtent = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'data', 'velivole-config-extent-map.json', 'utf8')));
 
 const overpassQuery = `
 [out:json][bbox];
