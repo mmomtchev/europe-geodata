@@ -41,7 +41,12 @@ for (let x = mapExtent[0]; x < mapExtent[2]; x += step)
 q.flush().then(() => {
 	const all = qt.get({ x: mapExtent[0], y: mapExtent[1], w: mapExtent[2] - mapExtent[0], h: mapExtent[3] - mapExtent[1] });
 	for (const f of all) {
-		geojson.features.push(f);
+		const feature = f.feature;
+		if (typeof feature.properties.tags === 'object') {
+			Object.assign(feature.properties, feature.properties.tags);
+			delete feature.properties.tags;
+		}
+		geojson.features.push(feature);
 	}
 	fs.writeFileSync(output, JSON.stringify(geojson), 'utf-8');
 });
